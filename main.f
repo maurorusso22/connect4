@@ -522,8 +522,16 @@ VARIABLE TEMP_ROW_INDEX \ temporary row index
     THEN
 ;
 
+: IS_INPUT_VALID
+    DUP DUP \ keep the input twice to validate it
+    0 >= 
+    SWAP \ swap to make the next comparison with the input, otherwise it would take the 'input 0 >=' result
+    MAX_COLUMN_INDEX <=
+    AND
+;
+
 \ user adds an element
-: ADD
+: ADD_ELEMENT
     MAX_ROW_INDEX II ! \ first element of the column to be "inserted" is the the element [5, col]
     INIT_FLAG
     BEGIN
@@ -550,6 +558,22 @@ VARIABLE TEMP_ROW_INDEX \ temporary row index
         \ close the loop if element has been inserted 
         \ or row index went out of range (column is full)
     UNTIL
+;
+\ usage: 2 ADD_ELEMENT;
+
+: PRINT_ERROR
+    73 EMIT 78 EMIT 86 EMIT 65 EMIT 76 EMIT 73 EMIT 68 EMIT 32 EMIT 73 EMIT 78 EMIT 80 EMIT 85 EMIT 84 EMIT CR
+    \ INVALID INPUT
+;
+
+: ADD
+    IS_INPUT_VALID
+    IF
+        ADD_ELEMENT
+    ELSE
+        DROP \ delete the invalid input
+        PRINT_ERROR
+    THEN
 ;
 \ usage: 2 ADD;
 
